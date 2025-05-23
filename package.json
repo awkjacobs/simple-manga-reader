@@ -26,7 +26,11 @@
     "dependencies": {
         "@electron-toolkit/preload": "^3.0.2",
         "@electron-toolkit/utils": "^4.0.0",
-        "lucide-react": "^0.511.0"
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-react": "^0.511.0",
+        "tailwind-merge": "^3.3.0",
+        "tw-animate-css": "^1.3.0"
     },
     "devDependencies": {
         "@electron-toolkit/eslint-config": "^2.1.0",
