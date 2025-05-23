@@ -8,7 +8,7 @@ import { SidebarTrigger } from "./ui/sidebar"
 
 export default function DragWindowRegion() {
     return (
-        <div className="flex flex-1 items-stretch justify-between">
+        <div className="flex items-stretch justify-between p-2">
             <SidebarTrigger />
             <div className="draglayer w-full">
                 <div className="flex flex-1 p-2 text-xs whitespace-nowrap text-gray-400"></div>

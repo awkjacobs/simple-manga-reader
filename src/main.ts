@@ -18,7 +18,7 @@ function createWindow() {
         webPreferences: {
             devTools: inDevelopment,
             contextIsolation: true,
-            nodeIntegration: false,
+            nodeIntegration: true,
             nodeIntegrationInSubFrames: false,
 
             preload: preload,
@@ -27,6 +27,9 @@ function createWindow() {
     })
     registerListeners(mainWindow)
 
+    if (inDevelopment) {
+        mainWindow.webContents.openDevTools({ mode: "detach" })
+    }
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
     } else {
