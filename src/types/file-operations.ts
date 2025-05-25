@@ -1,6 +1,5 @@
 export interface FileOperationsAPI {
-    showFilePath: (file: File) => string
-    copyFile: (filePath: string) => Promise<{
+    copyFile: (file: File) => Promise<{
         success: boolean
         storedPath?: string
         error?: string

@@ -4,23 +4,31 @@ import { FileChannels } from "./file-channels"
 export function exposeFileContext() {
     const { contextBridge, ipcRenderer } = window.require("electron")
     contextBridge.exposeInMainWorld("fileOps", {
-        showFilePath: (file: File) => {
-            // It's best not to expose the full file path to the web content if
-            // possible.
+        copyFile: (file: File) => {
             const path = webUtils.getPathForFile(file)
-            console.log(`File path: ${path}`)
-            return path
-        },
 
-        copyFile: (filePath: string) => {
-            console.log("copyFile called from renderer with path:", filePath)
+            if (process.env.NODE_ENV === "development") {
+                console.log("copyFile called from renderer")
+            }
 
-            return ipcRenderer.invoke(FileChannels.COPY_FILE, filePath)
+            return ipcRenderer
+                .invoke(FileChannels.COPY_FILE, path)
+                .catch((error: unknown) => {
+                    console.error("Failed to get copy file:", error)
+                    throw error
+                })
         },
 
         getStoragePath: () => {
-            console.log("getStoragePath called from renderer")
-            return ipcRenderer.invoke(FileChannels.GET_APP_DATA_PATH)
+            if (process.env.NODE_ENV === "development") {
+                console.log("getStoragePath called from renderer")
+            }
+            return ipcRenderer
+                .invoke(FileChannels.GET_APP_DATA_PATH)
+                .catch((error: unknown) => {
+                    console.error("Failed to get storage path:", error)
+                    throw error
+                })
         },
     })
 }

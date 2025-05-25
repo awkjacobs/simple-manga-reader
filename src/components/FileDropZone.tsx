@@ -33,16 +33,8 @@ export function FileDropZone() {
         console.log("Dropped files:", files)
 
         for (const file of files) {
-            const path = window.fileOps.showFilePath(file)
-            console.log("Processing file:", path)
             try {
-                if (!path) {
-                    setStatus(
-                        `File "${file.name}" cannot be processed: no file path available`,
-                    )
-                    continue
-                }
-                const result = await window.fileOps.copyFile(path)
+                const result = await window.fileOps.copyFile(file)
                 console.log("Copy result:", result)
                 if (result.success) {
                     setStatus(`File "${file.name}" imported successfully`)
