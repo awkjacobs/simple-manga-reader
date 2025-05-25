@@ -8,7 +8,7 @@ export function exposeFileContext() {
             // It's best not to expose the full file path to the web content if
             // possible.
             const path = webUtils.getPathForFile(file)
-            alert(`Uploaded file path was: ${path}`)
+            console.log(`File path: ${path}`)
             return path
         },
 
