@@ -6,12 +6,25 @@ import {
 import React from "react"
 import { SidebarTrigger } from "./ui/sidebar"
 
-export default function DragWindowRegion() {
+export default function DragWindowRegion({
+    pathname = "/",
+}: {
+    pathname?: string
+}) {
+    // Format the path for display
+    const formattedPath = React.useMemo(() => {
+        return pathname === "/"
+            ? "Dashboard"
+            : pathname.slice(1).charAt(0).toUpperCase() + pathname.slice(2)
+    }, [pathname])
+
     return (
         <div className="flex items-stretch justify-between p-2">
             <SidebarTrigger />
             <div className="draglayer w-full">
-                <div className="flex flex-1 p-2 text-xs whitespace-nowrap text-gray-400"></div>
+                <div className="flex flex-1 p-2 text-xs whitespace-nowrap text-gray-400">
+                    {formattedPath}
+                </div>
             </div>
             <WindowButtons />
         </div>
