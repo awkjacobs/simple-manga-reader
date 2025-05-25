@@ -13,9 +13,11 @@ export default function DragWindowRegion({
 }) {
     // Format the path for display
     const formattedPath = React.useMemo(() => {
-        return pathname === "/"
-            ? "Dashboard"
-            : pathname.slice(1).charAt(0).toUpperCase() + pathname.slice(2)
+        if (pathname === "/") return "Dashboard"
+
+        // Handle multi-segment paths by taking only the first segment
+        const firstSegment = pathname.slice(1).split("/")[0]
+        return firstSegment.charAt(0).toUpperCase() + firstSegment.slice(1)
     }, [pathname])
 
     return (
