@@ -1,16 +1,10 @@
 import React, { useState, useCallback } from "react"
 import { Card } from "@/components/ui/card"
+import { FileOperationsAPI } from "@/types/file-operations"
 
 declare global {
     interface Window {
-        fileOps: {
-            copyFile: (filePath: string) => Promise<{
-                success: boolean
-                storedPath?: string
-                error?: string
-            }>
-            getStoragePath: () => Promise<string>
-        }
+        fileOps: FileOperationsAPI
     }
 }
 
@@ -34,14 +28,22 @@ export function FileDropZone() {
         e.preventDefault()
         e.stopPropagation()
         setIsDragging(false)
-
+        console.log("Files dropped:", e)
         const files = Array.from(e.dataTransfer.files)
         console.log("Dropped files:", files)
 
         for (const file of files) {
-            console.log("Processing file:", file.path)
+            const path = window.fileOps.showFilePath(file)
+            console.log("Processing file:", path)
             try {
-                const result = await window.fileOps.copyFile(file.path)
+                if (!path) {
+                    setStatus(
+                        `File "${file.name}" cannot be processed: no file path available`,
+                    )
+                    continue
+                }
+                const result = await window.fileOps.copyFile(path)
+                console.log("Copy result:", result)
                 if (result.success) {
                     setStatus(`File "${file.name}" imported successfully`)
                 } else {
