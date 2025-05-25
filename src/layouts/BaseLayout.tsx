@@ -95,7 +95,7 @@ export default function BaseLayout({
                         </SidebarFooter>
                     </Sidebar>
                     <main className="flex h-screen max-h-screen flex-1 flex-col overflow-hidden">
-                        <DragWindowRegion />
+                        <DragWindowRegion pathname={pathname} />
                         <div className="scrollbar-thin container flex-1 overflow-y-auto py-6">
                             {children}
                         </div>
