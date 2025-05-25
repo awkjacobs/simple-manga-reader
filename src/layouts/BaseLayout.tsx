@@ -44,7 +44,7 @@ export default function BaseLayout({
                                 <span>Simple Manga Reader</span>
                             </Link>
                         </SidebarHeader>
-                        <div className="px-4 py-2">
+                        <div className="p-2">
                             <div className="relative">
                                 <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
                                 <Input
@@ -57,7 +57,7 @@ export default function BaseLayout({
                             </div>
                         </div>
                         <SidebarContent>
-                            <SidebarMenu>
+                            <SidebarMenu className="px-2">
                                 {navigation.map((item) => (
                                     <SidebarMenuItem key={item.name}>
                                         <SidebarMenuButton
