@@ -9,6 +9,8 @@ export default function DashboardPage() {
             <h1
                 className="text-3xl font-bold tracking-tight"
                 data-testid="pageTitle"
+                hidden
+                aria-hidden="true"
             >
                 Dashboard
             </h1>
