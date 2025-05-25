@@ -11,26 +11,35 @@ declare global {
 export function FileDropZone() {
     const [isDragging, setIsDragging] = useState(false)
     const [status, setStatus] = useState<string>("")
+    const [dragCounter, setDragCounter] = useState<number>(0)
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
+        setDragCounter((prev) => prev + 1)
+
         setIsDragging(true)
     }, [])
 
     const handleDragLeave = useCallback((e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        setIsDragging(false)
+        setDragCounter((prev) => {
+            const newCount = prev - 1
+            if (newCount === 0) {
+                setIsDragging(false)
+            }
+            return newCount
+        })
     }, [])
 
     const handleDrop = useCallback(async (e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
         setIsDragging(false)
-        console.log("Files dropped:", e)
+
         const files = Array.from(e.dataTransfer.files)
-        console.log("Dropped files:", files)
+        console.log("Dropped files:", files, dragCounter)
 
         for (const file of files) {
             try {
@@ -55,7 +64,7 @@ export function FileDropZone() {
 
     return (
         <Card
-            className={`p-8 text-center transition-colors ${
+            className={`w-full p-8 text-center transition-colors ${
                 isDragging ? "bg-accent" : "bg-card"
             }`}
             onDragOver={handleDragOver}

@@ -3,34 +3,45 @@ import { FileChannels } from "./file-channels"
 import path from "path"
 import fs from "fs/promises"
 
+async function ensureStorageDirectory(): Promise<string> {
+    const userDataPath = app.getPath("userData")
+    const storagePath = path.join(userDataPath, "manga-storage")
+
+    try {
+        await fs.mkdir(storagePath, { recursive: true })
+    } catch (error) {
+        console.error("Failed to create storage directory:", error)
+        throw error
+    }
+
+    return storagePath
+}
+
 export function registerFileHandlers() {
     console.log("Registering file handlers...")
 
     // Get the app's local storage path
     ipcMain.handle(FileChannels.GET_APP_DATA_PATH, async () => {
         console.log("GET_APP_DATA_PATH handler called")
-        const userDataPath = app.getPath("userData")
-        const storagePath = path.join(userDataPath, "manga-storage")
-
-        // Ensure the storage directory exists
-        try {
-            await fs.mkdir(storagePath, { recursive: true })
-        } catch (error) {
-            console.error("Failed to create storage directory:", error)
-        }
-
-        return storagePath
-    }) // Copy file to app storage
+        return await ensureStorageDirectory()
+    })
+    // Copy file to app storage
     ipcMain.handle(FileChannels.COPY_FILE, async (_, filePath: string) => {
         console.log("COPY_FILE handler called with path:", filePath)
         try {
-            const userDataPath = app.getPath("userData")
-            const storagePath = path.join(userDataPath, "manga-storage")
+            const storagePath = await ensureStorageDirectory()
+
+            // Validate the file path to prevent directory traversal
+            const resolvedPath = path.resolve(filePath)
+            if (
+                !resolvedPath.startsWith(path.resolve("/")) ||
+                resolvedPath.includes("..")
+            ) {
+                throw new Error("Invalid file path")
+            }
+
             const fileName = path.basename(filePath)
             const destination = path.join(storagePath, fileName)
-
-            // Ensure directory exists
-            await fs.mkdir(storagePath, { recursive: true })
 
             // Copy the file
             await fs.copyFile(filePath, destination)
