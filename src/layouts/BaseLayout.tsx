@@ -28,8 +28,9 @@ export default function BaseLayout({
     const navigation = [
         { name: "Dashboard", href: "/", icon: Home },
         { name: "Library", href: "/library", icon: Library },
-        { name: "Settings", href: "/settings", icon: Settings },
     ]
+    const settings = { name: "Settings", href: "/settings", icon: Settings }
+
     return (
         <main className="h-screen pb-20">
             <SidebarProvider>
@@ -74,24 +75,21 @@ export default function BaseLayout({
                                 ))}
                             </SidebarMenu>
                         </SidebarContent>
-                        <SidebarFooter className="p-4">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-primary/10 h-8 w-8 rounded-full">
-                                    <img
-                                        src="/placeholder.svg?height=32&width=32"
-                                        alt="User avatar"
-                                        className="h-full w-full rounded-full"
-                                    />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-medium">
-                                        Alex Johnson
-                                    </span>
-                                    <span className="text-muted-foreground text-xs">
-                                        Premium Member
-                                    </span>
-                                </div>
-                            </div>
+                        <SidebarFooter className="p-2">
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                        asChild
+                                        isActive={pathname === settings.href}
+                                        tooltip={settings.name}
+                                    >
+                                        <Link to={settings.href}>
+                                            <settings.icon className="h-4 w-4" />
+                                            <span>{settings.name}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
                         </SidebarFooter>
                     </Sidebar>
                     <main className="flex h-screen max-h-screen flex-1 flex-col overflow-hidden">
