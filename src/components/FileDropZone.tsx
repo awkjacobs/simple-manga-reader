@@ -78,9 +78,6 @@ export function FileDropZone() {
         setDroppedFiles([])
     }
 
-    useEffect(() => {
-        setDragCounter(0)
-    }, [isDragging])
 
     return (
         <>
