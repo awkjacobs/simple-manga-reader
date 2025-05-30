@@ -94,7 +94,7 @@ const TITLE = [
         value: "blame!",
     },
 ] as const
-const DEAFULT_VALUES = {
+const DEFAULT_VALUES = {
     is_new_title: false,
     new_title: "",
     select_title: "",
@@ -107,7 +107,7 @@ export function FileMetadataDialog({
 }: FileMetadataDialogProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: DEAFULT_VALUES,
+        defaultValues: DEFAULT_VALUES,
     })
 
     const isNewTitle = useWatch({
@@ -125,7 +125,7 @@ export function FileMetadataDialog({
 
     useEffect(() => {
         if (open) {
-            form.reset(DEAFULT_VALUES)
+            form.reset(DEFAULT_VALUES)
             setMetadata(createMetadataFromFiles(files))
         }
     }, [open, files, form])
