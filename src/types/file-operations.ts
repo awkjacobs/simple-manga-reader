@@ -16,6 +16,13 @@ export interface FileOperationsAPI {
      */
     getStoragePath: () => Promise<string>
 }
+export interface FileMetadata {
+    originalName: string
+    displayName: string
+    series?: string
+    volume?: string
+    chapter?: string
+}
 
 declare global {
     interface Window {

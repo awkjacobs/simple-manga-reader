@@ -1,45 +1,40 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import { Card } from "@/components/ui/card"
-import { FileOperationsAPI } from "@/types/file-operations"
+import { FileMetadata } from "@/types/file-operations"
 import { FileMetadataDialog } from "./FileMetadataDialog"
-
-declare global {
-    interface Window {
-        fileOps: FileOperationsAPI
-    }
-}
 
 export function FileDropZone() {
     const [isDragging, setIsDragging] = useState(false)
     const [status, setStatus] = useState<string>("")
-    // const [dragCounter, setDragCounter] = useState<number>(0)
+    const [dragCounter, setDragCounter] = useState<number>(0)
     const [dialogOpen, setDialogOpen] = useState(false)
     const [droppedFiles, setDroppedFiles] = useState<File[]>([])
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        // setDragCounter((prev) => prev + 1)
+        setDragCounter((prev) => prev + 1)
         setIsDragging(true)
     }, [])
 
     const handleDragLeave = useCallback((e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        // setDragCounter((prev) => {
-        //     const newCount = prev - 1
-        //     if (newCount === 0) {
-        //         setIsDragging(false)
-        //     }
-        //     return newCount
-        // })
+        setDragCounter((prev) => {
+            const newCount = prev - 1
+            console.log("Drag counter:", newCount)
+            if (newCount === 0) {
+                setIsDragging(false)
+            }
+            return newCount
+        })
     }, [])
 
     const handleDrop = useCallback(async (e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
         setIsDragging(false)
-        // setDragCounter(0)
+        setDragCounter(0)
         console.log("Dropped:", e.dataTransfer)
         const files = Array.from(e.dataTransfer.files)
         console.log("Dropped files:", files)
@@ -48,14 +43,7 @@ export function FileDropZone() {
         setDialogOpen(true)
     }, [])
 
-    const handleSaveMetadata = async (
-        metadata: Array<{
-            originalName: string
-            displayName: string
-            series?: string
-            chapter?: string
-        }>,
-    ) => {
+    const handleSaveMetadata = async (metadata: FileMetadata[]) => {
         if (metadata.length !== droppedFiles.length) {
             setStatus("Error: Metadata count doesn't match file count")
             return
@@ -89,6 +77,10 @@ export function FileDropZone() {
         setStatus(results.join("\n"))
         setDroppedFiles([])
     }
+
+    useEffect(() => {
+        setDragCounter(0)
+    }, [isDragging])
 
     return (
         <>

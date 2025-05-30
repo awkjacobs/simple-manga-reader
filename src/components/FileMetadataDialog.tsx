@@ -29,13 +29,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { cn } from "@/utils/tailwind"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Check, ChevronsUpDown, LoaderCircle } from "lucide-react"
@@ -44,6 +37,7 @@ import { useForm, useWatch } from "react-hook-form"
 
 import * as z from "zod"
 import { Checkbox } from "@/components/ui/checkbox"
+import { FileMetadata } from "@/types/file-operations"
 
 function createMetadataFromFiles(files: File[]): FileMetadata[] {
     return files.map((file) => ({
@@ -58,7 +52,6 @@ const formSchema = z
         is_new_title: z.boolean().default(false).optional(),
         new_title: z.string().optional(),
         select_title: z.string().optional(),
-        type: z.string().nonempty("Type is required"),
     })
     .superRefine((data, ctx) => {
         if (
@@ -84,13 +77,6 @@ const formSchema = z
         }
     })
 
-interface FileMetadata {
-    originalName: string
-    displayName: string
-    series?: string
-    chapter?: string
-}
-
 interface FileMetadataDialogProps {
     files: File[]
     open: boolean
@@ -98,7 +84,7 @@ interface FileMetadataDialogProps {
     onSave: (metadata: FileMetadata[]) => void
 }
 
-const titles = [
+const TITLE = [
     {
         label: "Chainsaw Man",
         value: "chainsaw_man",
@@ -108,7 +94,11 @@ const titles = [
         value: "blame!",
     },
 ] as const
-
+const DEAFULT_VALUES = {
+    is_new_title: false,
+    new_title: "",
+    select_title: "",
+}
 export function FileMetadataDialog({
     files,
     open,
@@ -117,36 +107,25 @@ export function FileMetadataDialog({
 }: FileMetadataDialogProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            is_new_title: false,
-            new_title: "", // Remove extension
-            select_title: "",
-            type: "",
-        },
+        defaultValues: DEAFULT_VALUES,
     })
 
-    // ...inside your component...
     const isNewTitle = useWatch({
         control: form.control,
         name: "is_new_title",
     })
+
     const [metadata, setMetadata] = useState<FileMetadata[]>(() =>
         files.map((file) => ({
             originalName: file.name,
             displayName: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
             series: "",
-            chapter: "",
         })),
     )
 
     useEffect(() => {
         if (open) {
-            form.reset({
-                is_new_title: false,
-                new_title: "",
-                type: "",
-                select_title: "",
-            })
+            form.reset(DEAFULT_VALUES)
             setMetadata(createMetadataFromFiles(files))
         }
     }, [open, files, form])
@@ -242,9 +221,9 @@ export function FileMetadataDialog({
                                                         )}
                                                     >
                                                         {field.value
-                                                            ? titles.find(
-                                                                  (language) =>
-                                                                      language.value ===
+                                                            ? TITLE.find(
+                                                                  (title) =>
+                                                                      title.value ===
                                                                       field.value,
                                                               )?.label
                                                             : "Select a title already in your library or enter a new one"}
@@ -260,7 +239,7 @@ export function FileMetadataDialog({
                                                             No titles found.
                                                         </CommandEmpty>
                                                         <CommandGroup>
-                                                            {titles.map(
+                                                            {TITLE.map(
                                                                 (title) => (
                                                                     <CommandItem
                                                                         value={
@@ -305,43 +284,6 @@ export function FileMetadataDialog({
                                 )}
                             />
                         )}
-
-                        <FormField
-                            control={form.control}
-                            name="type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Type</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select the type of the collection being imported" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="book">
-                                                Book
-                                            </SelectItem>
-                                            <SelectItem value="volume">
-                                                Volume
-                                            </SelectItem>
-                                            <SelectItem value="chapter">
-                                                Chapter
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormDescription>
-                                        The type of the collection being
-                                        imported, whether it&apos;s a book,
-                                        volume, chapter, or unspecified.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                         <DialogFooter>
                             <Button variant="outline" onClick={onClose}>
                                 Cancel
