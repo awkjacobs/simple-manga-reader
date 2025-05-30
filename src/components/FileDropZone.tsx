@@ -40,7 +40,7 @@ export function FileDropZone() {
         e.stopPropagation()
         setIsDragging(false)
         // setDragCounter(0)
-
+        console.log("Dropped:", e.dataTransfer)
         const files = Array.from(e.dataTransfer.files)
         console.log("Dropped files:", files)
 
@@ -56,6 +56,12 @@ export function FileDropZone() {
             chapter?: string
         }>,
     ) => {
+        if (metadata.length !== droppedFiles.length) {
+            setStatus("Error: Metadata count doesn't match file count")
+            return
+        }
+
+        const results: string[] = []
         for (let i = 0; i < droppedFiles.length; i++) {
             const file = droppedFiles[i]
             const meta = metadata[i]
@@ -64,22 +70,23 @@ export function FileDropZone() {
                 const result = await window.fileOps.copyFile(file)
                 console.log("Copy result:", result)
                 if (result.success) {
-                    setStatus(
-                        `File "${meta.displayName}" imported successfully`,
+                    results.push(
+                        `✓ "${meta.displayName}" imported successfully`,
                     )
                 } else {
-                    setStatus(
-                        `Failed to import "${meta.displayName}": ${result.error}`,
+                    results.push(
+                        `✗ Failed to import "${meta.displayName}": ${result.error}`,
                     )
                 }
             } catch (error) {
-                setStatus(
-                    `Error importing "${meta.displayName}": ${
+                results.push(
+                    `✗ Error importing "${meta.displayName}": ${
                         error instanceof Error ? error.message : String(error)
                     }`,
                 )
             }
         }
+        setStatus(results.join("\n"))
         setDroppedFiles([])
     }
 

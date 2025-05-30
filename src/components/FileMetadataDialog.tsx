@@ -45,6 +45,14 @@ import { useForm, useWatch } from "react-hook-form"
 import * as z from "zod"
 import { Checkbox } from "@/components/ui/checkbox"
 
+function createMetadataFromFiles(files: File[]): FileMetadata[] {
+    return files.map((file) => ({
+        originalName: file.name,
+        displayName: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+        series: "",
+        chapter: "",
+    }))
+}
 const formSchema = z
     .object({
         is_new_title: z.boolean().default(false).optional(),
@@ -139,16 +147,9 @@ export function FileMetadataDialog({
                 type: "",
                 select_title: "",
             })
-            setMetadata(
-                files.map((file) => ({
-                    originalName: file.name,
-                    displayName: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
-                    series: "",
-                    chapter: "",
-                })),
-            )
+            setMetadata(createMetadataFromFiles(files))
         }
-    }, [open])
+    }, [open, files, form])
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         console.log("Form submitted with values:", values)
@@ -209,7 +210,7 @@ export function FileMetadataDialog({
                                         <FormControl>
                                             <Input
                                                 placeholder="New Title"
-                                                type=""
+                                                type="text"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -341,14 +342,7 @@ export function FileMetadataDialog({
                                 </FormItem>
                             )}
                         />
-                        {/* </form>
-                </Form> */}
                         <DialogFooter>
-                            {/* <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="mx-auto max-w-3xl"
-                        > */}
                             <Button variant="outline" onClick={onClose}>
                                 Cancel
                             </Button>
